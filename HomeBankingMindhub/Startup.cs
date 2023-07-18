@@ -1,4 +1,5 @@
 using HomeBankingMindhub.Models;
+using HomeBankingMindhub.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace HomeBankingMindhub
@@ -25,7 +27,12 @@ namespace HomeBankingMindhub
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            //Agregamos el contexto de la base de datos
             services.AddDbContext<HomeBankingContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
+            //Agregamos el repositorio de clientes
+            services.AddScoped<IClientRepository, ClientRepository>();
+            //Agregamos los controladores y configuramos el serializador para que no se rompa con las referencias circulares
+            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +56,8 @@ namespace HomeBankingMindhub
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                //Agregamos los endpoints de los controladores
+                endpoints.MapControllers();
             });
         }
     }
