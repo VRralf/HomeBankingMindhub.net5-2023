@@ -31,6 +31,8 @@ namespace HomeBankingMindhub
             services.AddDbContext<HomeBankingContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
             //Agregamos el repositorio de clientes
             services.AddScoped<IClientRepository, ClientRepository>();
+            //Agregamos el repositorio de cuentas
+            services.AddScoped<IAccountRepository, AccountRepository>();
             //Agregamos los controladores y configuramos el serializador para que no se rompa con las referencias circulares
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
         }

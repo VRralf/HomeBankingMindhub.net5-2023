@@ -38,7 +38,7 @@ namespace HomeBankingMindhub.Controllers
                               Id = ac.Id,
                               Number = ac.Number,
                               Balance = ac.Balance,
-                              CreationDate = ac.CreationDate
+                              CreationDate = ac.CreationDate,
                           }).ToList()
                       };
                       clientsDTO.Add(clientDTO);
@@ -72,7 +72,15 @@ namespace HomeBankingMindhub.Controllers
                         Id = ac.Id,
                         Number = ac.Number,
                         Balance = ac.Balance,
-                        CreationDate = ac.CreationDate
+                        CreationDate = ac.CreationDate,
+                        Transactions = ac.Transactions.Select(tr => new TransactionDTO
+                        {
+                            Id = tr.Id,
+                            Amount = tr.Amount,
+                            Date = tr.Date,
+                            Description = tr.Description,
+                            Type = tr.Type
+                        }).ToList()
                     }).ToList()
                 };
                 return Ok(clientDTO);
