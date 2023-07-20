@@ -2,7 +2,8 @@ var app = new Vue({
     el:"#app",
     data:{
         accountInfo: {},
-        error: null
+        error: null,
+        transactions: [],
     },
     methods:{
         getData: function(){
@@ -12,7 +13,7 @@ var app = new Vue({
             .then(function (response) {
                 //get client ifo
                 app.accountInfo = response.data;
-                app.accountInfo.transactions.$values.sort((a,b) => parseInt(b.id - a.id))
+                app.transactions = response.data.transactions.$values.sort((a,b) => Number.parseInt(b.id - a.id))
             })
             .catch(function (error) {
                 // handle error
@@ -23,7 +24,9 @@ var app = new Vue({
             return new Date(date).toLocaleDateString('en-gb');
         }
     },
-    mounted: function(){
+    created(){
         this.getData();
+    },
+    mounted: function(){
     }
 })

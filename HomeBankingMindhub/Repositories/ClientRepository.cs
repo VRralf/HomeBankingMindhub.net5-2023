@@ -14,12 +14,19 @@ namespace HomeBankingMindhub.Repositories
 
         public Client FindById(long id)
         {
-            return FindByCondition(client => client.Id == id).Include(cli=>cli.Accounts).FirstOrDefault();
+            return FindByCondition(client => client.Id == id)
+                .Include(cli=>cli.Accounts)
+                .Include(cli=>cli.ClientLoans)
+                .ThenInclude(cl=>cl.Loan)
+                .FirstOrDefault();
         }
 
         public IEnumerable<Client> GetAllClients()
         {
-            return FindAll().Include(cli=>cli.Accounts).ToList();
+            return FindAll().Include(cli=>cli.Accounts)
+                .Include(cli=>cli.ClientLoans)
+                .ThenInclude(cl=>cl.Loan)
+                .ToList();
         }
 
         public void Save(Client client)

@@ -22,10 +22,10 @@ namespace HomeBankingMindhub.Models
             }
 
 
-            if(!context.Accounts.Any())
+            if (!context.Accounts.Any())
             {
-                var myAccount = context.Clients.FirstOrDefault(c=>c.Email=="vrralf@gmail.com");
-                if (myAccount!=null)
+                var myAccount = context.Clients.FirstOrDefault(c => c.Email == "vrralf@gmail.com");
+                if (myAccount != null)
                 {
                     var Accounts = new Account[]
                     {
@@ -57,7 +57,61 @@ namespace HomeBankingMindhub.Models
                 }
             }
 
+            if (!context.Loans.Any())
+            {
+                //Creamos 3 prestamos, Hipotecario, Personal y Automotríz
+                var loans = new Loan[]
+                {
+                    new Loan { Name="Hipotecario",MaxAmount=500000,Payments="12,24,36,48,60"},
+                    new Loan { Name="Personal",MaxAmount=100000,Payments="3,12,24"},
+                    new Loan { Name="Automotríz",MaxAmount=300000,Payments="6,12,24,36"},
+                };
+                foreach (var loan in loans)
+                {
+                    context.Loans.Add(loan);
+                }
+            }
+
+            //context.SaveChanges();
+            if (!context.ClientLoans.Any())
+            {
+                var myClient = context.Clients.FirstOrDefault(c => c.Email == "vrralf@gmail.com");
+                if (myClient != null)
+                {
+                    var loan1 = context.Loans.FirstOrDefault(l => l.Name == "Hipotecario");
+                    var clientLoan1 = new ClientLoan
+                    {
+                        Amount = 450000,
+                        ClientId = myClient.Id,
+                        LoanId = loan1.Id,
+                        Payments = "60"
+                    };
+                    context.ClientLoans.Add(clientLoan1);
+                    var loan2 = context.Loans.FirstOrDefault(l => l.Name == "Personal");
+                    var clientLoan2 = new ClientLoan
+                    {
+                        Amount = 55000,
+                        ClientId = myClient.Id,
+                        LoanId = loan2.Id,
+                        Payments = "12"
+                    };
+                    context.ClientLoans.Add(clientLoan2);
+                    var loan3 = context.Loans.FirstOrDefault(l => l.Name == "Automotríz");
+                    var clientLoan3 = new ClientLoan
+                    {
+                        Amount = 150000,
+                        ClientId = myClient.Id,
+                        LoanId = loan3.Id,
+                        Payments = "24"
+                    };
+                    context.ClientLoans.Add(clientLoan3);
+                }
+            }
+
+
             context.SaveChanges();
+
+
         }
     }
 }

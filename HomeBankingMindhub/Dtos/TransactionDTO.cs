@@ -5,7 +5,6 @@ namespace HomeBankingMindhub.Dtos
 {
     public class TransactionDTO
     {
-        [JsonIgnore]
         public long Id { get; set; }
         public string Type { get; set; }
         public double Amount { get; set; }

@@ -39,7 +39,15 @@ namespace HomeBankingMindhub.Controllers
                               Number = ac.Number,
                               Balance = ac.Balance,
                               CreationDate = ac.CreationDate,
-                          }).ToList()
+                          }).ToList(),
+                          Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                          {
+                              Id = cl.Id,
+                              LoanId = cl.LoanId,
+                              Name = cl.Loan.Name,
+                              Amount = cl.Amount,
+                              Payments = int.Parse(cl.Payments),
+                          }).ToList(),
                       };
                       clientsDTO.Add(clientDTO);
                 }
@@ -59,7 +67,7 @@ namespace HomeBankingMindhub.Controllers
                 var client = _clientRepository.FindById(id);
                 if(client == null)
                 {
-                    return Forbid();
+                    return NotFound();
                 }
                 var clientDTO = new ClientDTO
                 {
@@ -73,15 +81,24 @@ namespace HomeBankingMindhub.Controllers
                         Number = ac.Number,
                         Balance = ac.Balance,
                         CreationDate = ac.CreationDate,
-                        Transactions = ac.Transactions.Select(tr => new TransactionDTO
-                        {
-                            Id = tr.Id,
-                            Amount = tr.Amount,
-                            Date = tr.Date,
-                            Description = tr.Description,
-                            Type = tr.Type
-                        }).ToList()
-                    }).ToList()
+                        //Transactions = ac.Transactions.Select(tr => new TransactionDTO
+                        //{
+                        //    Id = tr.Id,
+                        //    Amount = tr.Amount,
+                        //    Date = tr.Date,
+                        //    Description = tr.Description,
+                        //    Type = tr.Type
+                        //}).ToList()
+                    }).ToList(),
+                    Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                    {
+                        Id = cl.Id,
+                        LoanId = cl.LoanId,
+                        Name = cl.Loan.Name,
+                        Amount = cl.Amount,
+                        Payments = int.Parse(cl.Payments),
+                    }).ToList(),
+
                 };
                 return Ok(clientDTO);
             }

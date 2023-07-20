@@ -11,5 +11,6 @@ namespace HomeBankingMindhub.Dtos
         public string LastName { get; set; }
         public string Email { get; set; }
         public List<AccountDTO> Accounts { get; set; }
+        public ICollection<ClientLoanDTO> Loans { get; set; }
     }
 }

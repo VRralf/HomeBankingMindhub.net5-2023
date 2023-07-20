@@ -7,7 +7,6 @@ namespace HomeBankingMindhub.Dtos
 {
     public class AccountDTO
     {
-        [JsonIgnore]
         public long Id { get; set; }
         public string Number { get; set; }
         public DateTime CreationDate { get; set; }
