@@ -40,13 +40,24 @@ namespace HomeBankingMindhub.Controllers
                               Balance = ac.Balance,
                               CreationDate = ac.CreationDate,
                           }).ToList(),
-                          Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                          Credits = client.ClientLoans.Select(cl => new ClientLoanDTO
                           {
                               Id = cl.Id,
                               LoanId = cl.LoanId,
                               Name = cl.Loan.Name,
                               Amount = cl.Amount,
                               Payments = int.Parse(cl.Payments),
+                          }).ToList(),
+                          Cards = client.Cards.Select(ca=> new CardDTO
+                          {
+                              Id = ca.Id,
+                              Number = ca.Number,
+                              Type = ca.Type,
+                              CardHolder = ca.CardHolder,
+                              FromDate = ca.FromDate,
+                              ThruDate = ca.ThruDate,
+                              Color = ca.Color,
+                              Cvv = ca.Cvv,
                           }).ToList(),
                       };
                       clientsDTO.Add(clientDTO);
@@ -90,13 +101,24 @@ namespace HomeBankingMindhub.Controllers
                         //    Type = tr.Type
                         //}).ToList()
                     }).ToList(),
-                    Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                    Credits = client.ClientLoans.Select(cl => new ClientLoanDTO
                     {
                         Id = cl.Id,
                         LoanId = cl.LoanId,
                         Name = cl.Loan.Name,
                         Amount = cl.Amount,
                         Payments = int.Parse(cl.Payments),
+                    }).ToList(),
+                    Cards = client.Cards.Select(ca => new CardDTO
+                    {
+                        Id = ca.Id,
+                        Number = ca.Number,
+                        Type = ca.Type,
+                        CardHolder = ca.CardHolder,
+                        FromDate = ca.FromDate,
+                        ThruDate = ca.ThruDate,
+                        Color = ca.Color,
+                        Cvv = ca.Cvv,
                     }).ToList(),
 
                 };
