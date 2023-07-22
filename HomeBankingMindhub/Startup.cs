@@ -1,5 +1,6 @@
 using HomeBankingMindhub.Models;
 using HomeBankingMindhub.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,18 @@ namespace HomeBankingMindhub
             services.AddScoped<IAccountRepository, AccountRepository>();
             //Agregamos los controladores y configuramos el serializador para que no se rompa con las referencias circulares
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+            //Agregamos el servicio de autenticacion por cookies
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
+            {
+                option.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                //Login path, en la guia dice new PathString("/index.html"), volver a esta configuracion si la actual no funciona
+                option.LoginPath = "/index.html";
+            });
+            //Agregamos el servicio de autorizacion
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +65,9 @@ namespace HomeBankingMindhub
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //Agregamos el middleware de autenticacion
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

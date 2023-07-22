@@ -12,6 +12,16 @@ namespace HomeBankingMindhub.Repositories
         {
         }
 
+        public Client FindByEmail(string email)
+        {
+            return FindByCondition(client => client.Email.ToUpper() == email.ToUpper())
+                .Include(cli=>cli.Accounts)
+                .Include(cli=>cli.ClientLoans)
+                .ThenInclude(cl=>cl.Loan)
+                .Include(cli=>cli.Cards)
+                .FirstOrDefault();
+        }
+
         public Client FindById(long id)
         {
             return FindByCondition(client => client.Id == id)

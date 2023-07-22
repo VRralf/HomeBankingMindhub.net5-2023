@@ -129,5 +129,92 @@ namespace HomeBankingMindhub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("current")]
+        public IActionResult GetCurrent()
+        {
+            try
+            {
+                //Obtener el email del usuario logueado o null en su defecto
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if(email == string.Empty)
+                {
+                    return Unauthorized();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+                if(client == null)
+                {
+                    return NotFound();
+                }
+                var clientDTO = new ClientDTO
+                {
+                    Id = client.Id,
+                    Email = client.Email,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Accounts = client.Accounts.Select(ac => new AccountDTO
+                    {
+                        Id = ac.Id,
+                        Number = ac.Number,
+                        Balance = ac.Balance,
+                        CreationDate = ac.CreationDate,
+                    }).ToList(),
+                    Credits = client.ClientLoans.Select(cl => new ClientLoanDTO
+                    {
+                        Id = cl.Id,
+                        LoanId = cl.LoanId,
+                        Name = cl.Loan.Name,
+                        Amount = cl.Amount,
+                        Payments = int.Parse(cl.Payments),
+                    }).ToList(),
+                    Cards = client.Cards.Select(ca => new CardDTO
+                    {
+                        Id = ca.Id,
+                        Number = ca.Number,
+                        Type = ca.Type,
+                        CardHolder = ca.CardHolder,
+                        FromDate = ca.FromDate,
+                        ThruDate = ca.ThruDate,
+                        Color = ca.Color,
+                        Cvv = ca.Cvv,
+                    }).ToList(),
+                };
+                return Ok(clientDTO);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost]
+        public IActionResult Post([FromBody] Client client)
+        {
+            try
+            {
+                //Validamos los datos del cliente
+                if(String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName) || String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password))
+                {
+                    return BadRequest("First Name, Last Name, Email and Password are required");
+                }
+                //Buscamos si el usuario ya existe
+                Client user = _clientRepository.FindByEmail(client.Email);
+                if(user != null)
+                {
+                    return StatusCode(403, "Email está en uso");
+                }
+                Client newClient = new Client
+                {
+                    Email = client.Email,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Password = client.Password,
+                };
+                _clientRepository.Save(newClient);
+                return Created("", newClient);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
