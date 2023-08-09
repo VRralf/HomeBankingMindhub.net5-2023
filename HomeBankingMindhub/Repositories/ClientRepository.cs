@@ -27,7 +27,7 @@ namespace HomeBankingMindhub.Repositories
             return FindByCondition(client => client.Id == id)
                 .Include(cli=>cli.Accounts)
                 .Include(cli=>cli.ClientLoans)
-                .ThenInclude(cl=>cl.Loan)
+                    .ThenInclude(cl=>cl.Loan)
                 .Include(cli=>cli.Cards)
                 .FirstOrDefault();
         }

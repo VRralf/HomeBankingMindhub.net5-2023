@@ -16,6 +16,13 @@ namespace HomeBankingMindhub.Repositories
             return FindByCondition(account => account.Id == id).Include(acc=>acc.Transactions).FirstOrDefault();
         }
 
+        public IEnumerable<Account> GetAccountByClient(long clientId)
+        {
+            return FindByCondition(acc => acc.ClientId == clientId)
+                .Include(acc => acc.Transactions)
+                .ToList();
+        }
+
         public IEnumerable<Account> GetAllAccounts()
         {
             return FindAll().Include(acc=>acc.Transactions).ToList();

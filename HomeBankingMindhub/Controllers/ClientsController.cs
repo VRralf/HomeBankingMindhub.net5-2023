@@ -14,9 +14,13 @@ namespace HomeBankingMindhub.Controllers
     public class ClientsController : ControllerBase
     {
         private IClientRepository _clientRepository;
-        public ClientsController(IClientRepository clientRepository)
+        private AccountsController _accountsController;
+        private CardsController _cardsController;
+        public ClientsController(IClientRepository clientRepository, AccountsController accountsController, CardsController cardsController)
         {
             _clientRepository = clientRepository;
+            _accountsController = accountsController;
+            _cardsController = cardsController;
         }
         [HttpGet]
         public IActionResult GetAllClients()
@@ -209,9 +213,104 @@ namespace HomeBankingMindhub.Controllers
                     Password = client.Password,
                 };
                 _clientRepository.Save(newClient);
+                var client1 = _clientRepository.FindByEmail(newClient.Email);
+                Account newAccount = new Account
+                {
+                    Number = "VIN" + new Random().Next(10000, 99999).ToString(),
+                    Balance = 0,
+                    CreationDate = DateTime.Now,
+                    ClientId = client1.Id,
+                };
+                _accountsController.Post(newClient.Id);
                 return Created("", newClient);
             }
             catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("current/accounts")]
+        public IActionResult PostAccount()
+        {
+            try
+            {
+                //Obtener el email del usuario logueado o null en su defecto
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Unauthorized();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                // Preguntamos si tiene menos de 3 cuentas
+                if (client.Accounts.Count >= 3)
+                {
+                    return StatusCode(403, "No puede tener más de 3 cuentas");
+                }
+
+                var result = _accountsController.Post(client.Id);
+                return result;
+
+                //Account newAccount = new Account
+                //{
+                //    Number = "VIN" + new Random().Next(10000, 99999).ToString(),
+                //    Balance = 0,
+                //    CreationDate = DateTime.Now,
+                //    ClientId = client.Id,
+                //};
+                //_accountRepository.Save(newAccount);
+                //return Created("", newAccount);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("current/cards")]
+        public IActionResult PostCard([FromBody] Card card)
+        {
+            try
+            {
+                //Obtener el email del usuario logueado o null en su defecto
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty)
+                {
+                    return Unauthorized();
+                }
+                Client client = _clientRepository.FindByEmail(email);
+                if (client == null)
+                {
+                    return NotFound();
+                }
+                // Contar las tarjetas del mismo tipo
+                // mostrar en consola el objeto card
+                Console.WriteLine("Tipo: "+ card.Type + " Color: "+ card.Color);
+                var cardsTypeCount = client.Cards.Where(c => c.Type == card.Type).Count();
+                if(cardsTypeCount > 2)
+                {
+                    return StatusCode(403, "No puede tener más de 3 tarjetas de este tipo");
+                }
+                // Tarjeta de este tipo y color
+                Card equalCard = client.Cards.Where(c => c.Type == card.Type && c.Color == card.Color).FirstOrDefault();
+                if (equalCard != null)
+                {
+                    return StatusCode(403, "No puede tener más de 1 tarjeta de este color");
+                }
+                Card newCard = new Card
+                {
+                    ClientId = client.Id,
+                    CardHolder = client.FirstName + " " + client.LastName,
+                    Type = card.Type,
+                    Color = card.Color,
+                };
+                var result = _cardsController.Post(newCard);
+                return result;
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }

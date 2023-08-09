@@ -1,3 +1,4 @@
+using HomeBankingMindhub.Controllers;
 using HomeBankingMindhub.Models;
 using HomeBankingMindhub.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,10 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace HomeBankingMindhub
 {
@@ -34,6 +32,13 @@ namespace HomeBankingMindhub
             services.AddScoped<IClientRepository, ClientRepository>();
             //Agregamos el repositorio de cuentas
             services.AddScoped<IAccountRepository, AccountRepository>();
+            //Agregamos el repositorio de tarjetas
+            services.AddScoped<ICardRepository, CardRepository>();
+            //Agregamos el controlador de cuentas
+            services.AddScoped<AccountsController>();
+            //Agregamos el controlador de tarjetas
+            services.AddScoped<CardsController>();
+
             //Agregamos los controladores y configuramos el serializador para que no se rompa con las referencias circulares
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             //Agregamos el servicio de autenticacion por cookies

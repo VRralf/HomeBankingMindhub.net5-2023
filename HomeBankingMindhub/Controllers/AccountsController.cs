@@ -1,7 +1,6 @@
 ﻿using HomeBankingMindhub.Dtos;
 using HomeBankingMindhub.Models;
 using HomeBankingMindhub.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -79,6 +78,26 @@ namespace HomeBankingMindhub.Controllers
                 return Ok(accountDTO);
             }
             catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost]
+        public IActionResult Post(long clientId)
+        {
+            try
+            {
+                Account newAccount = new Account
+                {
+                    Number = "VIN" + new Random().Next(10000, 99999).ToString(),
+                    Balance = 0,
+                    CreationDate = DateTime.Now,
+                    ClientId = clientId,
+                };
+                _accountRepository.Save(newAccount);
+                return Created("", newAccount);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
